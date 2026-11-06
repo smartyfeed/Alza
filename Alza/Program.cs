@@ -4,7 +4,17 @@ using Alza.Planner.Generation;
 using Alza.Planner.Models;
 
 var fleet = Fleet.Default;
-IDeliveryPlanner planner = new AdaptiveGreedyPlanner(fleet);
+IDeliveryPlanner mainPlanner = new AdaptiveGreedyPlanner(fleet);
+
+// Simpler loading orders for comparison. They load vans the same way as the main planner,
+// so any difference in revenue comes only from the order in which parcels are loaded.
+IDeliveryPlanner[] baselines =
+[
+    new GreedyPlanner("Fixed share 0.5", fleet, ParcelPriority.RevenuePerCapacity(fleet, weightShare: 0.5)),
+    new GreedyPlanner("Revenue per m³", fleet, ParcelPriority.RevenuePerVolume),
+    new GreedyPlanner("Revenue per kg", fleet, ParcelPriority.RevenuePerWeight),
+    new GreedyPlanner("Revenue only", fleet, ParcelPriority.Revenue),
+];
 
 (string Name, ParcelProfile Profile, int ParcelCount)[] scenarios =
 [
@@ -17,21 +27,25 @@ IDeliveryPlanner planner = new AdaptiveGreedyPlanner(fleet);
 ];
 
 // The first call includes JIT compilation; a small warm-up run keeps the timings fair.
-planner.Plan(new ParcelGenerator(ParcelProfile.Typical, seed: 1).Generate(10_000));
+var warmUpParcels = new ParcelGenerator(ParcelProfile.Typical, seed: 1).Generate(10_000);
+foreach (var planner in baselines.Prepend(mainPlanner))
+    planner.Plan(warmUpParcels);
 
 Console.WriteLine($"Fleet: {fleet.VanCount} vans, {fleet.TotalVolumeM3:N0} m³ and {fleet.TotalWeightKg / 1000:N0} t per round");
-Console.WriteLine($"Planner: {planner.Name}");
+Console.WriteLine($"Planner: {mainPlanner.Name}");
 Console.WriteLine();
 Console.WriteLine(
     $"{"Scenario",-25} {"Parcels",9} {"Time ms",8} {"Shipped",9} {"Revenue CZK",13} {"Upper bound",13} " +
     $"{"Gap",7} {"W.share",7} {"Volume",7} {"Weight",7}  Check");
+
+var comparisonRows = new List<string>();
 
 foreach (var (name, profile, parcelCount) in scenarios)
 {
     var parcels = new ParcelGenerator(profile, seed: 42).Generate(parcelCount);
 
     var stopwatch = Stopwatch.StartNew();
-    var plan = planner.Plan(parcels);
+    var plan = mainPlanner.Plan(parcels);
     stopwatch.Stop();
 
     var errors = PlanValidator.FindErrors(plan, parcels);
@@ -47,9 +61,31 @@ foreach (var (name, profile, parcelCount) in scenarios)
 
     foreach (var error in errors.Take(5))
         Console.WriteLine($"    {error}");
+
+    // The bound depends only on the parcels and the fleet, so it applies to every planner.
+    var upperBound = plan.RevenueUpperBound ?? throw new InvalidOperationException("The main planner always reports a bound.");
+    var gaps = baselines
+        .Select(baseline => FormatGap(baseline.Plan(parcels), parcels, upperBound))
+        .Prepend(FormatGap(plan, parcels, upperBound));
+    comparisonRows.Add($"{name,-25} " + string.Join(" ", gaps.Select(gap => $"{gap,15}")));
 }
 
 Console.WriteLine();
 Console.WriteLine("Gap = revenue missed compared with the upper bound (no plan can earn more than the bound).");
 Console.WriteLine("W.share = how much weight counts in the loading priority (0 = only volume, 1 = only weight).");
 Console.WriteLine("Volume/Weight = share of the fleet's capacity used.");
+
+Console.WriteLine();
+Console.WriteLine("Gap by loading order (lower is better):");
+Console.WriteLine($"{"Scenario",-25} {"Adaptive",15} " + string.Join(" ", baselines.Select(baseline => $"{baseline.Name,15}")));
+foreach (var row in comparisonRows)
+    Console.WriteLine(row);
+
+static string FormatGap(DeliveryPlan plan, IReadOnlyList<Parcel> parcels, double upperBound)
+{
+    if (PlanValidator.FindErrors(plan, parcels).Count > 0)
+        return "invalid";
+
+    var gap = Math.Max(0, (upperBound - plan.TotalRevenue) / upperBound); // a plan that reaches the bound can differ by rounding noise
+    return $"{gap:P3}";
+}

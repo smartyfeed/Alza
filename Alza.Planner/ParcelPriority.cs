@@ -24,4 +24,21 @@ public static class ParcelPriority
     public static double CapacityUsed(Parcel parcel, Fleet fleet, double weightShare) =>
         weightShare * parcel.WeightKg / fleet.VanMaxWeightKg +
         (1 - weightShare) * parcel.VolumeM3 / fleet.VanMaxVolumeM3;
+
+    /// <summary>
+    /// Baseline: the most valuable parcels first, regardless of their size.
+    /// </summary>
+    public static double Revenue(Parcel parcel) => parcel.Revenue;
+
+    /// <summary>
+    /// Baseline: revenue per cubic metre, the usual rule of thumb for a van that fills up.
+    /// Same order as <see cref="RevenuePerCapacity"/> with weight share 0: ignores weight.
+    /// </summary>
+    public static double RevenuePerVolume(Parcel parcel) => parcel.Revenue / parcel.VolumeM3;
+
+    /// <summary>
+    /// Baseline: revenue per kilogram.
+    /// Same order as <see cref="RevenuePerCapacity"/> with weight share 1: ignores volume.
+    /// </summary>
+    public static double RevenuePerWeight(Parcel parcel) => parcel.Revenue / parcel.WeightKg;
 }
