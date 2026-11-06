@@ -1,7 +1,11 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using Alza.Planner;
 using Alza.Planner.Generation;
 using Alza.Planner.Models;
+
+// Windows consoles default to a legacy code page that cannot show "m³" or "–".
+Console.OutputEncoding = Encoding.UTF8;
 
 var fleet = Fleet.Default;
 IDeliveryPlanner mainPlanner = new AdaptiveGreedyPlanner(fleet);

@@ -10,7 +10,7 @@ namespace Alza.Planner;
 /// <remarks>
 /// On light days (Tue/Thu) the whole demand fits within the fleet's total capacity, so the
 /// goal is to ship everything rather than to choose. The planner then loads the largest
-/// parcels first (first-fit decreasing), the standard way to pack items into bins.
+/// parcels first, the standard order for packing items into bins (as in first-fit decreasing).
 /// No weekday is configured; the planner recognises the situation from the data.
 /// </remarks>
 public sealed class GreedyPlanner : IDeliveryPlanner
