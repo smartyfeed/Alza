@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alza", "Alza\Alza.csproj", "{002EAA83-A40D-4223-B916-082B7F5A62A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alza.Planner", "Alza.Planner\Alza.Planner.csproj", "{4C593EDA-6A81-42C6-BEA9-2A4A15535DD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alza.Planner.Tests", "Alza.Planner.Tests\Alza.Planner.Tests.csproj", "{DEBD2349-C41A-4FB3-8A3B-77D41D04C735}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{002EAA83-A40D-4223-B916-082B7F5A62A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{002EAA83-A40D-4223-B916-082B7F5A62A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{002EAA83-A40D-4223-B916-082B7F5A62A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C593EDA-6A81-42C6-BEA9-2A4A15535DD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C593EDA-6A81-42C6-BEA9-2A4A15535DD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C593EDA-6A81-42C6-BEA9-2A4A15535DD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C593EDA-6A81-42C6-BEA9-2A4A15535DD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEBD2349-C41A-4FB3-8A3B-77D41D04C735}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEBD2349-C41A-4FB3-8A3B-77D41D04C735}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEBD2349-C41A-4FB3-8A3B-77D41D04C735}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEBD2349-C41A-4FB3-8A3B-77D41D04C735}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
