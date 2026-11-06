@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+        <!-- Tests build broken van loads by hand to check that the validator catches them. -->
+        <InternalsVisibleTo Include="Alza.Planner.Tests" />
+    </ItemGroup>
+
 </Project>
