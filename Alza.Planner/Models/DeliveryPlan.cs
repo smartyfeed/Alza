@@ -31,4 +31,25 @@ public sealed class DeliveryPlan
 
     /// <summary>Share of the fleet's volume capacity that is used (0–1).</summary>
     public double VolumeUtilization => TotalVolumeM3 / Fleet.TotalVolumeM3;
+
+    /// <summary>
+    /// Proven maximum revenue for this round, if the planner computed one: no valid plan
+    /// can earn more (see <see cref="Planner.RevenueUpperBound"/>).
+    /// </summary>
+    public double? RevenueUpperBound { get; init; }
+
+    /// <summary>
+    /// How far the revenue is below <see cref="RevenueUpperBound"/>, as a share of it
+    /// (0 = provably optimal). Null if no bound is known.
+    /// </summary>
+    public double? GapToUpperBound =>
+        RevenueUpperBound is { } bound && bound > 0
+            ? Math.Max(0, (bound - TotalRevenue) / bound) // a plan that reaches the bound can differ by rounding noise
+            : null;
+
+    /// <summary>
+    /// Weight share of the loading priority, if the planner chose one
+    /// (see <see cref="ParcelPriority.CapacityUsed"/>).
+    /// </summary>
+    public double? WeightShare { get; init; }
 }

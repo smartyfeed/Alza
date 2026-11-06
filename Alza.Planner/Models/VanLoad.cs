@@ -27,6 +27,9 @@ public sealed class VanLoad
     public double VolumeM3 { get; private set; }
     public double Revenue { get; private set; }
 
+    public double FreeWeightKg => MaxWeightKg - WeightKg;
+    public double FreeVolumeM3 => MaxVolumeM3 - VolumeM3;
+
     /// <summary>True if the parcel still fits, both by weight and by volume.</summary>
     public bool CanFit(Parcel parcel) =>
         WeightKg + parcel.WeightKg <= MaxWeightKg &&

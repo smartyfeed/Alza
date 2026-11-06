@@ -58,6 +58,16 @@ public sealed record ParcelProfile(
     };
 
     /// <summary>
+    /// Mix of light and dense goods with a density around the van's 786 kg/m³: the weight
+    /// and volume limits run out at the same time, so the planner has to balance them.
+    /// </summary>
+    public static ParcelProfile Mixed { get; } = Typical with
+    {
+        MedianDensityKgPerM3 = 800,
+        DensitySpread = 0.4,
+    };
+
+    /// <summary>
     /// Revenue roughly proportional to volume, so revenue per m³ is similar for all parcels.
     /// The planner cannot simply pick "obviously profitable" parcels; this is the hard case.
     /// </summary>
